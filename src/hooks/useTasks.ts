@@ -1,31 +1,47 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchTasks, createTask } from '../api/tasks';
-import type { Task } from '../types';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchTasks, createTask } from "../api/tasks";
+import type { Task } from "../types";
+import { threadId } from "worker_threads";
 
 export function useTasks() {
-  return useQuery<Task[]>({ queryKey: ['tasks'], queryFn: fetchTasks });
+  return useQuery<Task[]>({ queryKey: ["tasks"], queryFn: fetchTasks });
 }
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createTask,
-    onMutate: async (title: string) => {
-      await queryClient.cancelQueries({ queryKey: ['tasks'] });
-      const prev = queryClient.getQueryData<Task[]>(['tasks']);
+    onMutate: async ({
+      title,
+      threadId,
+    }: {
+      title: string;
+      threadId?: string;
+    }) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+
+      const prev = queryClient.getQueryData<Task[]>(["tasks"]);
+
       if (prev) {
-        queryClient.setQueryData<Task[]>(['tasks'], [
-          ...prev,
-          { id: 'temp-' + Date.now(), title, status: 'running', steps: [] },
-        ]);
+        const optimisticTask: Task = {
+          id: threadId || "temp-" + Date.now(),
+          createdAt: new Date().toISOString(), // mock creation time
+          title,
+          status: "executing",
+          steps: [],
+          metadata: {}, // or populate with mock values if needed
+        };
+
+        queryClient.setQueryData<Task[]>(["tasks"], [...prev, optimisticTask]);
       }
+
       return { prev };
     },
     onError: (_err, _title, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(['tasks'], ctx.prev);
+      if (ctx?.prev) queryClient.setQueryData(["tasks"], ctx.prev);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 }

@@ -1,53 +1,61 @@
-import { useParams } from 'react-router-dom';
-import { FormEvent, useState } from 'react';
-import { useTask } from '../hooks/useTask';
-import Modal from '../components/Modal';
-import { useLogs } from '../hooks/useLogs';
-import { preserveScroll } from '../utils/scroll';
+import { useParams } from "react-router-dom";
+import { FormEvent, useEffect, useState } from "react";
+import { useTask } from "../hooks/useTask";
+import Modal from "../components/Modal";
+import { useLogs } from "../hooks/useLogs";
+import { preserveScroll } from "../utils/scroll";
+import { useCreateTask } from "../hooks/useTasks";
 
 export default function TaskDetails() {
   const { taskId } = useParams<{ taskId: string }>();
   const { data: task, isLoading } = useTask(taskId!);
-  const [message, setMessage] = useState('');
+  const createTask = useCreateTask();
+  const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const { data: logs } = useLogs(taskId!);
+  const { data: logs } = useLogs(task);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // send message - not implemented
-    setMessage('');
+    if (message.length !== 0 && task?.status !== "executing") {
+      createTask.mutate({ title: message, threadId: task?.id });
+      setMessage("");
+    }
   };
+
+  useEffect(() => {
+    if (task && !isLoading && task?.status === "executing") {
+      setOpen(true);
+    }
+  }, [task, setOpen]);
 
   if (isLoading) return <p>Loading...</p>;
   if (!task) return <p>Task not found</p>;
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">{task.title}</h2>
+      <h2 className="text-xl font-bold">Input: {task.title}</h2>
       <div className="space-y-2">
-        {task.steps.map((s) => (
-          <div key={s.id} className="p-2 border rounded">
-            {s.text}
-          </div>
-        ))}
+        {!!task?.result && (
+          <div className="p-2 border rounded">{task.result}</div>
+        )}
       </div>
 
-      {task.status !== 'running' && (
-        <form onSubmit={onSubmit} className="flex space-x-2">
-          <input
-            className="flex-1 border rounded p-2 bg-white dark:bg-gray-800"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Message"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Send
-          </button>
-        </form>
-      )}
+      <form onSubmit={onSubmit} className="flex space-x-2">
+        <input
+          className="flex-1 border rounded p-2 bg-white dark:bg-gray-800"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Message"
+          disabled={task.status === "executing"}
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          disabled={task.status === "executing"}
+        >
+          Send
+        </button>
+      </form>
 
       <button
         onClick={() => setOpen(true)}

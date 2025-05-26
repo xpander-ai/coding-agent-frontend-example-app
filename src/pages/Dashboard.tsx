@@ -10,7 +10,7 @@ export default function Dashboard() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!title) return;
-    createTask.mutate(title);
+    createTask.mutate({title});
     setTitle('');
   };
 

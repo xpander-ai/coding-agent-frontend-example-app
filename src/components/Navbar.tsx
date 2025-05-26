@@ -3,7 +3,7 @@ import { useTasks } from '../hooks/useTasks';
 
 export default function Navbar() {
   const { data } = useTasks();
-  const running = data?.filter((t) => t.status === 'running').length || 0;
+  const executing = data?.filter((t) => t.status === 'executing').length || 0;
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow p-4 flex justify-between">
@@ -11,7 +11,7 @@ export default function Navbar() {
         Task App
       </Link>
       <div className="flex items-center space-x-2">
-        {running > 0 && (
+        {executing > 0 && (
           <div className="flex items-center space-x-1">
             <svg
               className="animate-spin h-5 w-5 text-blue-500"
@@ -33,7 +33,7 @@ export default function Navbar() {
                 d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
               ></path>
             </svg>
-            <span>{running}</span>
+            <span>{executing}</span>
           </div>
         )}
       </div>

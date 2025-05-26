@@ -5,7 +5,10 @@ export interface Step {
 
 export interface Task {
   id: string;
+  createdAt: string;
   title: string;
-  status: 'running' | 'completed' | 'failed';
+  status: "executing" | "completed" | "failed";
+  result?: string;
   steps: Step[];
+  metadata: Record<string, any>;
 }
