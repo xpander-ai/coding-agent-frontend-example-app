@@ -30,6 +30,7 @@ export function useCreateTask() {
           status: "executing",
           steps: [],
           metadata: {}, // or populate with mock values if needed
+          result: "",
         };
 
         queryClient.setQueryData<Task[]>(["tasks"], [...prev, optimisticTask]);

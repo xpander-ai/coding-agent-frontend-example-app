@@ -20,6 +20,7 @@ export default function TaskDetails() {
     e.preventDefault();
     if (message.length !== 0 && task?.status !== "executing") {
       createTask.mutate({ title: message, threadId: task?.id });
+      setOpen(true);
       setMessage("");
     }
   };

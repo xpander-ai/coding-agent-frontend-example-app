@@ -112,7 +112,9 @@ export async function fetchTask(id: string): Promise<Task> {
 }
 
 export async function fetchLogs(task: Task): Promise<any> {
-  const url = `https://actions.xpander.ai/coding_agents/codex/${import.meta.env.VITE_APP_ORGANIZATION_ID}/${import.meta.env.VITE_APP_AGENT_ID}/${task.metadata.executionId}`;
+  const url = `https://actions.xpander.ai/coding_agents/codex/${
+    import.meta.env.VITE_APP_ORGANIZATION_ID
+  }/${import.meta.env.VITE_APP_AGENT_ID}/${task.metadata.executionId}`;
 
   const response = await fetch(url, {
     method: "GET",
