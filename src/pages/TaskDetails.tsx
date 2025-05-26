@@ -3,7 +3,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useTask } from "../hooks/useTask";
 import Modal from "../components/Modal";
 import { useLogs } from "../hooks/useLogs";
-import { preserveScroll } from "../utils/scroll";
+import ChatBubble from "../components/ChatBubble";
 import { useCreateTask } from "../hooks/useTasks";
 
 import ReactMarkdown from "react-markdown";
@@ -15,6 +15,8 @@ export default function TaskDetails() {
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const { data: logs } = useLogs(task);
+  const userAvatar = "https://i.pravatar.cc/150?img=3";
+  const agentAvatar = "https://i.pravatar.cc/150?img=5";
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -70,17 +72,21 @@ export default function TaskDetails() {
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)}>
-        <h3 className="font-bold mb-2">Logs</h3>
-        <div
-          id="log-container"
-          className="whitespace-pre-wrap bg-gray-100 dark:bg-gray-900 p-2 rounded h-64 overflow-y-auto"
-          ref={(el) => {
-            if (!el || logs === undefined) return;
-            preserveScroll(el, () => {
-              el.textContent = logs;
-            });
-          }}
-        />
+        <h3 className="font-bold mb-2">Conversation</h3>
+        <div className="space-y-4 overflow-y-auto h-64">
+          {logs?.split("\n").map((line, idx) => {
+            const isUser = idx % 2 === 0;
+            return (
+              <ChatBubble
+                key={idx}
+                message={line}
+                isUser={isUser}
+                avatarUrl={isUser ? userAvatar : agentAvatar}
+                timestamp={new Date().toLocaleTimeString()}
+              />
+            );
+          })}
+        </div>
       </Modal>
     </div>
   );
