@@ -20,10 +20,7 @@ function deferSync<T>(fn: () => T): Promise<T> {
   });
 }
 
-const xpanderClient = new XpanderClient(
-  import.meta.env.VITE_APP_API_KEY!,
-  "https://inbound.stg.xpander.ai"
-);
+const xpanderClient = new XpanderClient(import.meta.env.VITE_APP_API_KEY!);
 
 const config: Agent = {
   id: import.meta.env.VITE_APP_AGENT_ID!,
@@ -115,12 +112,7 @@ export async function fetchTask(id: string): Promise<Task> {
 }
 
 export async function fetchLogs(task: Task): Promise<any> {
-  const isStg = config.configuration.baseUrl.includes("stg");
-  const url = `https://actions.${
-    isStg ? "stg." : ""
-  }xpander.ai/coding_agents/codex/${import.meta.env.VITE_APP_ORGANIZATION_ID}/${
-    import.meta.env.VITE_APP_AGENT_ID
-  }/${task.metadata.executionId}`;
+  const url = `https://actions.xpander.ai/coding_agents/codex/${import.meta.env.VITE_APP_ORGANIZATION_ID}/${import.meta.env.VITE_APP_AGENT_ID}/${task.metadata.executionId}`;
 
   const response = await fetch(url, {
     method: "GET",

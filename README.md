@@ -25,15 +25,12 @@ VITE_APP_ORGANIZATION_ID=your_organization_id_here
 
 ### Using Xpander Backend as a Service
 
-By default, this app points to the Xpander staging backend (`https://inbound.stg.xpander.ai`). To use the Xpander production Backend as a Service, update the base URL in `src/api/tasks.ts`:
+This app uses the Xpander production Backend as a Service by default. No additional configuration is needed if your environment variables are set.
 
 ```ts
 // src/api/tasks.ts
-const xpanderClient = new XpanderClient(
-  import.meta.env.VITE_APP_API_KEY!,
-  'https://inbound.xpander.ai'
-);
+const xpanderClient = new XpanderClient(import.meta.env.VITE_APP_API_KEY!);
 ```
 
-The `fetchLogs` function will automatically detect production vs. staging based on this base URL and load logs from `https://actions.xpander.ai`.
+The `fetchLogs` function will load logs from `https://actions.xpander.ai`.
 ```
