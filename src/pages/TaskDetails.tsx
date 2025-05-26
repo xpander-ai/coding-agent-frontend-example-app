@@ -6,6 +6,8 @@ import { useLogs } from "../hooks/useLogs";
 import { preserveScroll } from "../utils/scroll";
 import { useCreateTask } from "../hooks/useTasks";
 
+import ReactMarkdown from "react-markdown";
+
 export default function TaskDetails() {
   const { taskId } = useParams<{ taskId: string }>();
   const { data: task, isLoading } = useTask(taskId!);
@@ -36,7 +38,9 @@ export default function TaskDetails() {
       <h2 className="text-xl font-bold">Input: {task.title}</h2>
       <div className="space-y-2">
         {!!task?.result && (
-          <div className="p-2 border rounded">{task.result}</div>
+          <ReactMarkdown className="p-2 border rounded">
+            {task.result}
+          </ReactMarkdown>
         )}
       </div>
 
