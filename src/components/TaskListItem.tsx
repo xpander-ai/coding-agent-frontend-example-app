@@ -5,7 +5,11 @@ interface Props {
   task: Task;
 }
 
+/**
+ * Renders a single task item with title, status, and link to details.
+ */
 export default function TaskListItem({ task }: Props) {
+  // Display basic task info and link to detail view
   return (
     <div className="p-4 border rounded flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition">
       <div>
