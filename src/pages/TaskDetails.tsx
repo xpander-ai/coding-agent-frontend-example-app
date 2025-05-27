@@ -13,23 +13,23 @@ export default function TaskDetails() {
   const { data: task, isLoading } = useTask(taskId!);
   const createTask = useCreateTask();
   const [message, setMessage] = useState("");
-  const [open, setOpen] = useState(false);
+  const [openedModal, setOpenedModal] = useState<string>("");
   const { data: logs } = useLogs(task);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (message.length !== 0 && task?.status !== "executing") {
       createTask.mutate({ title: message, threadId: task?.id });
-      setOpen(true);
+      setOpenedModal("logs");
       setMessage("");
     }
   };
 
   useEffect(() => {
     if (task && !isLoading && task?.status === "executing") {
-      setOpen(true);
+      setOpenedModal("logs");
     }
-  }, [task, setOpen]);
+  }, [task, setOpenedModal]);
 
   if (isLoading) return <p>Loading...</p>;
   if (!task) return <p>Task not found</p>;
@@ -62,14 +62,23 @@ export default function TaskDetails() {
         </button>
       </form>
 
-      <button
-        onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
-      >
-        View Logs
-      </button>
+      <div className="flex flex-row gap-2 items-center">
+        <button
+          onClick={() => setOpenedModal("logs")}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+        >
+          View Logs
+        </button>
 
-      <Modal open={open} onClose={() => setOpen(false)}>
+        <button
+          onClick={() => setOpenedModal("messages")}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+        >
+          View Messages
+        </button>
+      </div>
+
+      <Modal open={openedModal === "logs"} onClose={() => setOpenedModal("")}>
         <h3 className="font-bold mb-2">Logs</h3>
         <div
           id="log-container"
@@ -78,6 +87,23 @@ export default function TaskDetails() {
             if (!el || logs === undefined) return;
             preserveScroll(el, () => {
               el.textContent = logs;
+            });
+          }}
+        />
+      </Modal>
+
+      <Modal
+        open={openedModal === "messages"}
+        onClose={() => setOpenedModal("")}
+      >
+        <h3 className="font-bold mb-2">Messages</h3>
+        <div
+          id="log-container"
+          className="whitespace-pre-wrap bg-gray-100 dark:bg-gray-900 p-2 rounded h-64 overflow-y-auto"
+          ref={(el) => {
+            if (!el || !task?.messages || task?.messages?.length === 0) return;
+            preserveScroll(el, () => {
+              el.textContent = JSON.stringify(task.messages, null, 2);
             });
           }}
         />

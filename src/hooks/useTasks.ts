@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchTasks, createTask } from "../api/tasks";
 import type { Task } from "../types";
-import { threadId } from "worker_threads";
 
 export function useTasks() {
   return useQuery<Task[]>({ queryKey: ["tasks"], queryFn: fetchTasks });

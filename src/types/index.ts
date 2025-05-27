@@ -1,3 +1,4 @@
+import { IMemoryMessage } from "xpander-sdk";
 export interface Step {
   id: number;
   text: string;
@@ -10,5 +11,6 @@ export interface Task {
   status: "executing" | "completed" | "failed";
   result?: string;
   steps: Step[];
+  messages?: IMemoryMessage[];
   metadata: Record<string, any>;
 }

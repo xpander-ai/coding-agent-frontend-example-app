@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import type { Task } from '../types';
+import { Link } from "react-router-dom";
+import type { Task } from "../types";
 
 interface Props {
   task: Task;
@@ -11,6 +11,7 @@ export default function TaskListItem({ task }: Props) {
       <div>
         <h3 className="font-semibold">{task.title}</h3>
         <p className="text-sm text-gray-500">{task.status}</p>
+        <p className="text-sm text-gray-500">{task.createdAt}</p>
       </div>
       <Link to={`/task/${task.id}`} className="text-blue-500 hover:underline">
         View

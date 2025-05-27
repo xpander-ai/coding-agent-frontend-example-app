@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom';
-import { useTasks } from '../hooks/useTasks';
+import { Link } from "react-router-dom";
+import { useTasks } from "../hooks/useTasks";
 
 export default function Navbar() {
   const { data } = useTasks();
-  const executing = data?.filter((t) => t.status === 'executing').length || 0;
+  const executing = data?.filter((t) => t.status === "executing").length || 0;
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow p-4 flex justify-between">
       <Link to="/" className="font-bold">
-        Task App
+        Agentic Tasks Console
       </Link>
       <div className="flex items-center space-x-2">
         {executing > 0 && (

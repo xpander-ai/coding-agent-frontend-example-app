@@ -29,6 +29,7 @@ const config: Agent = {
 } as Agent;
 
 export async function fetchTasks(): Promise<Task[]> {
+  // call xpander to list the user's threads
   const threadsRaw = await deferSync(() => Memory.fetchUserThreads(config));
 
   let threads: Task[] = threadsRaw.map((thread) => ({
@@ -40,7 +41,7 @@ export async function fetchTasks(): Promise<Task[]> {
     metadata: thread.metadata,
   }));
 
-  threads = threads.slice(0, 10); // keep last 10
+  threads = threads.slice(0, 5);
 
   await Promise.all(
     threads.map(async (thread) => {
@@ -108,11 +109,13 @@ export async function fetchTask(id: string): Promise<Task> {
     status: execution?.status,
     result: execution?.result,
     steps: [],
+    messages: thread.messages,
   };
 }
 
 export async function fetchLogs(task: Task): Promise<any> {
-  const url = `https://actions.xpander.ai/coding_agents/codex/${
+  // fetch task specific logs from codex
+  const url = `https://logs.xpander.ai/${
     import.meta.env.VITE_APP_ORGANIZATION_ID
   }/${import.meta.env.VITE_APP_AGENT_ID}/${task.metadata.executionId}`;
 
