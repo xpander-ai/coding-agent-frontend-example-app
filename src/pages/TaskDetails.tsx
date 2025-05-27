@@ -37,7 +37,14 @@ export default function TaskDetails() {
     if (task && !isLoading && task?.status === "executing") {
       setOpenedModal("logs");
     }
-  }, [task, isLoading]);
+    if (
+      task &&
+      !isLoading &&
+      (task?.status === "completed" || task?.status === "error")
+    ) {
+      setOpenedModal("logs");
+    }
+  }, [task, isLoading, setOpenedModal]);
 
   if (isLoading) {
     // Show loading indicator while fetching task
@@ -111,7 +118,10 @@ export default function TaskDetails() {
       </Modal>
 
       {/* Modal displaying conversation messages for the task */}
-      <Modal open={openedModal === "messages"} onClose={() => setOpenedModal("")}> 
+      <Modal
+        open={openedModal === "messages"}
+        onClose={() => setOpenedModal("")}
+      >
         <h3 className="font-bold mb-2">Messages</h3>
         <div
           id="log-container"

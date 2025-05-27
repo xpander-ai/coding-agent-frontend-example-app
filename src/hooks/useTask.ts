@@ -9,6 +9,8 @@ import type { Task } from "../types";
  */
 export function useTask(id: string) {
   return useQuery<Task, Error>(["task", id], {
+    refetchOnWindowFocus: false,
+    refetchInterval: 3000,
     queryFn: () => fetchTask(id),
     enabled: Boolean(id), // Ensure the query only runs when an ID is provided
   });

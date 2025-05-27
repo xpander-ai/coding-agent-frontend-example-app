@@ -11,6 +11,7 @@ export function useLogs(task?: Task | undefined) {
   return useQuery({
     queryKey: ["logs", task],
     enabled: !!task?.id, // Only run when a task ID exists
+    refetchOnWindowFocus: false,
     queryFn: () => fetchLogs(task!),
     refetchInterval: 2000, // Poll logs every 2 seconds
   });

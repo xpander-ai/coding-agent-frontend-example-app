@@ -8,6 +8,7 @@ import type { Task } from "../types";
  */
 export function useTasks() {
   return useQuery<Task[]>({
+    refetchOnWindowFocus: false,
     queryKey: ["tasks"],
     queryFn: fetchTasks,
     retry: false, // Do not retry failures by default
