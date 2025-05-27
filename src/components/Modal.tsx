@@ -6,16 +6,27 @@ interface Props {
   children: ReactNode;
 }
 
+/**
+ * Modal component to display content in an overlay.
+ * - Listens for Escape key to close when open.
+ * - Clicking outside the modal content or on close button invokes onClose.
+ */
 export default function Modal({ open, onClose, children }: Props) {
   useEffect(() => {
     function esc(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
     }
-    if (open) document.addEventListener("keydown", esc);
+    if (open) {
+      // Attach escape key listener when modal is open
+      document.addEventListener("keydown", esc);
+    }
     return () => document.removeEventListener("keydown", esc);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open) {
+    // Do not render anything when modal is not open
+    return null;
+  }
 
   return (
     <div
@@ -24,7 +35,10 @@ export default function Modal({ open, onClose, children }: Props) {
     >
       <div
         className="relative bg-white dark:bg-gray-800 p-4 rounded w-11/12 md:w-2/3 lg:w-1/2 max-h-[80vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        // Prevent clicks inside modal content from closing the modal overlay
+        e.stopPropagation();
+      }}
       >
         {/* Close Button */}
         <button

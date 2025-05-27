@@ -2,15 +2,19 @@ import { FormEvent, useState } from 'react';
 import { useTasks, useCreateTask } from '../hooks/useTasks';
 import TaskListItem from '../components/TaskListItem';
 
+/**
+ * Dashboard page showing task creation form and list of existing tasks.
+ */
 export default function Dashboard() {
   const { data, isLoading } = useTasks();
   const createTask = useCreateTask();
   const [title, setTitle] = useState('');
 
+  // Handler for form submission to add a new task
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!title) return;
-    createTask.mutate({title});
+    if (!title) return; // Do nothing for empty titles
+    createTask.mutate({ title });
     setTitle('');
   };
 
@@ -31,8 +35,10 @@ export default function Dashboard() {
         </button>
       </form>
       {isLoading ? (
+        // Show loading indicator while fetching tasks
         <p>Loading...</p>
       ) : (
+        // Render list of tasks when data is available
         <div className="space-y-2">
           {data?.map((task) => (
             <TaskListItem key={task.id} task={task} />
