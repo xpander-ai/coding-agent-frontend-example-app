@@ -29,6 +29,13 @@ export default function TaskDetails() {
     if (task && !isLoading && task?.status === "executing") {
       setOpenedModal("logs");
     }
+    if (
+      task &&
+      !isLoading &&
+      (task?.status === "completed" || task?.status === "error")
+    ) {
+      setOpenedModal("logs");
+    }
   }, [task, setOpenedModal]);
 
   if (isLoading) return <p>Loading...</p>;

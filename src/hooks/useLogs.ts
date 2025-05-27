@@ -6,6 +6,7 @@ export function useLogs(task?: Task | undefined) {
   return useQuery({
     queryKey: ["logs", task],
     enabled: !!task?.id,
+    refetchOnWindowFocus: false,
     queryFn: () => fetchLogs(task!),
     refetchInterval: 2000,
   });

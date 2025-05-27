@@ -3,7 +3,11 @@ import { fetchTasks, createTask } from "../api/tasks";
 import type { Task } from "../types";
 
 export function useTasks() {
-  return useQuery<Task[]>({ queryKey: ["tasks"], queryFn: fetchTasks });
+  return useQuery<Task[]>({
+    refetchOnWindowFocus: false,
+    queryKey: ["tasks"],
+    queryFn: fetchTasks,
+  });
 }
 
 export function useCreateTask() {
