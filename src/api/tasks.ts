@@ -20,16 +20,21 @@ function deferSync<T>(fn: () => T): Promise<T> {
   });
 }
 
+/** Initialize Xpander SDK client using API key from environment variables. */
 const xpanderClient = new XpanderClient(import.meta.env.VITE_APP_API_KEY!);
 
+/** Agent configuration: agent ID, user details, and SDK configuration. */
 const config: Agent = {
   id: import.meta.env.VITE_APP_AGENT_ID!,
   userDetails: new UserDetails("xpander-user"),
   configuration: xpanderClient.configuration,
 } as Agent;
 
+/**
+ * Fetches the list of tasks (threads) for the configured agent.
+ * Maps raw thread data to Task objects and enriches with execution status and results.
+ */
 export async function fetchTasks(): Promise<Task[]> {
-  // call xpander to list the user's threads
   const threadsRaw = await deferSync(() => Memory.fetchUserThreads(config));
 
   let threads: Task[] = threadsRaw.map((thread) => ({
@@ -59,6 +64,12 @@ export async function fetchTasks(): Promise<Task[]> {
   return threads;
 }
 
+/**
+ * Creates a new execution task thread or continues an existing one.
+ * @param params.title - The title or prompt for the task execution.
+ * @param params.threadId - Optional existing thread ID to continue an ongoing task.
+ * @returns A Promise resolving to a Task object representing the created or updated execution.
+ */
 export async function createTask({
   title,
   threadId,
@@ -95,6 +106,11 @@ export async function createTask({
   };
 }
 
+/**
+ * Retrieves a single task by thread ID, including its execution details and messages.
+ * @param id - The thread ID for the task.
+ * @returns A Promise resolving to the Task with full details.
+ */
 export async function fetchTask(id: string): Promise<Task> {
   const thread = await deferSync(() => Memory.fetch(config, id));
   const execution = await deferSync(() =>
@@ -113,8 +129,13 @@ export async function fetchTask(id: string): Promise<Task> {
   };
 }
 
+/**
+ * Fetches raw execution logs for a given task from the Xpander logging service.
+ * @param task - The Task object containing the execution ID and metadata.
+ * @returns A Promise resolving to the combined log messages string.
+ * @throws Error if the HTTP request is not successful.
+ */
 export async function fetchLogs(task: Task): Promise<any> {
-  // fetch task specific logs from codex
   const url = `https://logs.xpander.ai/${
     import.meta.env.VITE_APP_ORGANIZATION_ID
   }/${import.meta.env.VITE_APP_AGENT_ID}/${task.metadata.executionId}`;

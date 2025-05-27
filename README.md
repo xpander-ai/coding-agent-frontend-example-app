@@ -34,3 +34,29 @@ const xpanderClient = new XpanderClient(import.meta.env.VITE_APP_API_KEY!);
 
 The `fetchLogs` function will load logs from `https://actions.xpander.ai`.
 ```
+## High-Level Overview
+
+This Task Management App (Agentic Tasks Console) allows users to interact with an AI agent backend to create and track task executions.
+
+- **Dashboard**: Create new tasks and view active/completed tasks.
+- **Task Details**: Inspect task input, view execution results, logs, and conversation messages; send follow-up messages.
+
+## Feature Highlights
+
+- **React Query** for data fetching, caching, and realtime polling.
+- **Tailwind CSS** for utility-first styling with dark mode support.
+- **Xpander SDK** (`xpander-sdk`) for interfacing with the Backend-as-a-Service agent API.
+- **Optimistic UI Updates** when creating new tasks.
+
+## Project Structure
+
+```
+src/
+├── api/          # Xpander API wrapper and REST calls
+├── hooks/        # Custom React Query hooks for tasks and logs
+├── components/   # Reusable UI components (Modal, Navbar, TaskListItem)
+├── pages/        # Route-level pages (Dashboard, TaskDetails)
+├── utils/        # Utility functions (e.g., scroll preservation)
+├── types/        # Shared TypeScript types and interfaces
+└── main.tsx      # Application entrypoint (ReactDOM, providers, router)
+```

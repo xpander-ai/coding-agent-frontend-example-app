@@ -8,23 +8,31 @@ import { useCreateTask } from "../hooks/useTasks";
 
 import ReactMarkdown from "react-markdown";
 
+/**
+ * Task detail page displaying task input, result, logs, messages, and follow-up form.
+ */
 export default function TaskDetails() {
+  // Get the task ID from URL parameters
   const { taskId } = useParams<{ taskId: string }>();
+  // Fetch task details (status, result, messages) for the given ID
   const { data: task, isLoading } = useTask(taskId!);
   const createTask = useCreateTask();
   const [message, setMessage] = useState("");
   const [openedModal, setOpenedModal] = useState<string>("");
+  // Fetch execution logs for the current task
   const { data: logs } = useLogs(task);
 
+  // Handler for sending follow-up messages to the task thread
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (message.length !== 0 && task?.status !== "executing") {
       createTask.mutate({ title: message, threadId: task?.id });
-      setOpenedModal("logs");
+      setOpenedModal("logs"); // Open logs modal to show new execution
       setMessage("");
     }
   };
 
+  // Auto-open logs modal when a task enters executing state
   useEffect(() => {
     if (task && !isLoading && task?.status === "executing") {
       setOpenedModal("logs");
@@ -36,13 +44,20 @@ export default function TaskDetails() {
     ) {
       setOpenedModal("logs");
     }
-  }, [task, setOpenedModal]);
+  }, [task, isLoading, setOpenedModal]);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (!task) return <p>Task not found</p>;
+  if (isLoading) {
+    // Show loading indicator while fetching task
+    return <p>Loading...</p>;
+  }
+  if (!task) {
+    // Handle case where no task data is found
+    return <p>Task not found</p>;
+  }
 
   return (
     <div className="space-y-4">
+      {/* Display the original input/prompt for the task */}
       <h2 className="text-xl font-bold">Input: {task.title}</h2>
       <div className="space-y-2">
         {!!task?.result && (
@@ -52,6 +67,7 @@ export default function TaskDetails() {
         )}
       </div>
 
+      {/* Form to send follow-up messages to the agent */}
       <form onSubmit={onSubmit} className="flex space-x-2">
         <input
           className="flex-1 border rounded p-2 bg-white dark:bg-gray-800"
@@ -69,6 +85,7 @@ export default function TaskDetails() {
         </button>
       </form>
 
+      {/* Controls to toggle between Logs and Messages modal views */}
       <div className="flex flex-row gap-2 items-center">
         <button
           onClick={() => setOpenedModal("logs")}
@@ -85,6 +102,7 @@ export default function TaskDetails() {
         </button>
       </div>
 
+      {/* Modal displaying execution logs with preserved scroll position */}
       <Modal open={openedModal === "logs"} onClose={() => setOpenedModal("")}>
         <h3 className="font-bold mb-2">Logs</h3>
         <div
@@ -99,6 +117,7 @@ export default function TaskDetails() {
         />
       </Modal>
 
+      {/* Modal displaying conversation messages for the task */}
       <Modal
         open={openedModal === "messages"}
         onClose={() => setOpenedModal("")}

@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 import { useTasks } from "../hooks/useTasks";
 
+/**
+ * Navigation bar showing app title and active executing task count.
+ */
 export default function Navbar() {
   const { data } = useTasks();
+  // Count how many tasks are currently executing to display a spinner badge
   const executing = data?.filter((t) => t.status === "executing").length || 0;
 
   return (
@@ -13,6 +17,7 @@ export default function Navbar() {
       <div className="flex items-center space-x-2">
         {executing > 0 && (
           <div className="flex items-center space-x-1">
+            {/* Spinner icon indicating active task processing */}
             <svg
               className="animate-spin h-5 w-5 text-blue-500"
               xmlns="http://www.w3.org/2000/svg"
