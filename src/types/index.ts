@@ -8,7 +8,7 @@ export interface Task {
   id: string;
   createdAt: string;
   title: string;
-  status: "executing" | "completed" | "error";
+  status: "pending" | "executing" | "completed" | "error";
   result?: string;
   steps: Step[];
   messages?: IMemoryMessage[];

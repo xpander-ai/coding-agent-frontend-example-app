@@ -11,50 +11,20 @@ export function useTasks() {
     refetchOnWindowFocus: false,
     queryKey: ["tasks"],
     queryFn: fetchTasks,
-    retry: false, // Do not retry failures by default
+    retry: false,
   });
 }
 
 /**
- * React hook to create a new task with optimistic updates to the task list.
- * Provides mutation function and handles caching logic.
+ * React hook to create a new task and refresh the task list on completion.
  * @returns The React Query mutation object for creating tasks.
  */
 export function useCreateTask() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createTask,
-    onMutate: async ({
-      title,
-      threadId,
-    }: {
-      title: string;
-      threadId?: string;
-    }) => {
-      await queryClient.cancelQueries({ queryKey: ["tasks"] });
-
-      const prev = queryClient.getQueryData<Task[]>(["tasks"]);
-
-      if (prev) {
-        const optimisticTask: Task = {
-          id: threadId || "temp-" + Date.now(),
-          createdAt: new Date().toISOString(), // mock creation time
-          title,
-          status: "executing",
-          steps: [],
-          metadata: {}, // or populate with mock values if needed
-          result: "",
-        };
-
-        queryClient.setQueryData<Task[]>(["tasks"], [...prev, optimisticTask]);
-      }
-
-      return { prev };
-    },
-    onError: (_err, _title, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(["tasks"], ctx.prev);
-    },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });

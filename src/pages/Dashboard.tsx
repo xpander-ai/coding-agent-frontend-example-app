@@ -1,21 +1,28 @@
-import { FormEvent, useState } from 'react';
-import { useTasks, useCreateTask } from '../hooks/useTasks';
-import TaskListItem from '../components/TaskListItem';
+import { FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTasks, useCreateTask } from "../hooks/useTasks";
+import TaskListItem from "../components/TaskListItem";
 
-/**
- * Dashboard page showing task creation form and list of existing tasks.
- */
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { data, isLoading } = useTasks();
   const createTask = useCreateTask();
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
 
-  // Handler for form submission to add a new task
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!title) return; // Do nothing for empty titles
-    createTask.mutate({ title });
-    setTitle('');
+    if (!title || createTask.isLoading) return;
+
+    createTask.mutate(
+      { title },
+      {
+        onSuccess: (newTask) => {
+          console.log(newTask);
+          setTitle("");
+          navigate(`/task/${newTask.id}`);
+        },
+      }
+    );
   };
 
   return (
@@ -26,19 +33,20 @@ export default function Dashboard() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="New task title"
+          disabled={createTask.isLoading}
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+          disabled={!title || createTask.isLoading}
         >
-          Add
+          {createTask.isLoading ? "Adding..." : "Add"}
         </button>
       </form>
+
       {isLoading ? (
-        // Show loading indicator while fetching tasks
         <p>Loading...</p>
       ) : (
-        // Render list of tasks when data is available
         <div className="space-y-2">
           {data?.map((task) => (
             <TaskListItem key={task.id} task={task} />
