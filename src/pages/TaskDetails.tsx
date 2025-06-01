@@ -69,6 +69,19 @@ export default function TaskDetails() {
     );
   };
 
+  // auto open codex logs if its running (last tool with not result)
+  useEffect(() => {
+    if (
+      task?.status === "executing" &&
+      task?.messages?.[task?.messages?.length - 1]?.toolCalls?.[0].name ===
+        "xpcoder-codex"
+    ) {
+      setOpenedModal("logs");
+    } else if (task?.status === "completed" || task?.status === "error") {
+      setOpenedModal("");
+    }
+  }, [task]);
+
   if (isLoading) return <p>Loading...</p>;
   if (!task) return <p>Task not found</p>;
 

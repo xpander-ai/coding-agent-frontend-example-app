@@ -17,7 +17,6 @@ export default function Dashboard() {
       { title },
       {
         onSuccess: (newTask) => {
-          console.log(newTask);
           setTitle("");
           navigate(`/task/${newTask.id}`);
         },
