@@ -91,7 +91,21 @@ export default function TaskDetails() {
 
       <div className="space-y-2">
         {!!task?.result && (
-          <ReactMarkdown className="p-2 border rounded">
+          <ReactMarkdown
+            className="p-2 border rounded"
+            components={{
+              a: ({ href, children }) => (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#753cff] underline"
+                >
+                  {children}
+                </a>
+              ),
+            }}
+          >
             {task.result}
           </ReactMarkdown>
         )}
