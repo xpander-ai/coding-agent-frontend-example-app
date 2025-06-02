@@ -27,11 +27,10 @@ export default function TaskDetails() {
     [task, isLoading, createTask.isLoading]
   );
 
-  const { data: logs } = useLogs(task);
+  const { data: logs, isFetched: logsAreFetched } = useLogs(task);
 
   const [lastLogs, setLastLogs] = useState<string | undefined>();
   const logsRef = useRef<HTMLDivElement>(null);
-
   // preserve scroll on logs updates
   useEffect(() => {
     if (!logs || !logsRef.current) return;
@@ -173,7 +172,8 @@ export default function TaskDetails() {
           className="h-full max-h-full overflow-auto bg-gray-100 dark:bg-gray-900 p-4 rounded"
         >
           <pre className="whitespace-pre-wrap break-words text-sm">
-            {lastLogs || "No logs available."}
+            {lastLogs ||
+              (logsAreFetched ? "No logs available." : "Loading logs")}
           </pre>
         </div>
       </Modal>
